@@ -1,0 +1,5 @@
+name: "remo-5"
+title: "REMO 5"
+description: "Produksi video explainer 2.5D bergaya bongkar benda vertikal 9:16 — rig SVG cel-shaded berlapis, single state controller, HUD telemetri, callout, dan kartu diagram; kalau user memanggil /remo 5 dan menyebut satu benda, langsung bangun prototipe benda itu tanpa VO, kecuali user mengirim file VO."
+category: "Work and knowledge"
+include_in_prompt: true

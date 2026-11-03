@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8">
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#0b1210;font-family:Arial,Helvetica,sans-serif}
+  #stage{position:relative;width:540px;height:960px;overflow:hidden;background:#122019;color:#fff}
+  #camera{position:absolute;inset:0;transform-origin:270px 540px}
+  #sceneSvg{position:absolute;inset:0;width:540px;height:960px}
+  .hud{position:absolute;top:16px;background:rgba(8,18,16,.88);border:1px solid rgba(255,255,255,.28);border-radius:12px;padding:10px 12px;z-index:10}
+  #hudLeft{left:16px;max-width:300px}
+  #hudLeft .brand{font-size:13px;font-weight:800;letter-spacing:1px;color:#ffcf3f}
+  #hudLeft .babak{font-size:15px;font-weight:800;margin-top:2px}
+  #hudRight{right:16px;text-align:right;min-width:150px}
+  #hudRight .val{font-size:28px;font-weight:900;color:#ffcf3f;line-height:1}
+  #hudRight .lab{font-size:11px;font-weight:700;letter-spacing:1px;margin-top:4px;color:#d7dee4}
+  .badge{position:absolute;background:rgba(255,255,255,.96);color:#122019;padding:7px 11px;border-radius:11px;font-size:13px;font-weight:800;border:2px solid #1a1d20;box-shadow:0 4px 0 rgba(0,0,0,.35);z-index:5;white-space:nowrap}
+  .badge small{display:block;font-size:10px;font-weight:700;color:#5a666e;letter-spacing:.5px}
+  #titleBig{position:absolute;left:40px;top:104px;width:460px;text-align:center;z-index:6}
+  #titleBig h1{margin:0;font-size:36px;letter-spacing:1px;text-shadow:0 3px 0 rgba(0,0,0,.45)}
+  #titleBig p{margin:6px 0 0;font-size:15px;font-weight:700;color:#d7dee4;text-shadow:0 2px 0 rgba(0,0,0,.4)}
+  #diagramCard{position:absolute;left:60px;top:688px;width:420px;background:rgba(255,255,255,.97);color:#122019;border:3px solid #1a1d20;border-radius:16px;padding:12px 14px;z-index:6}
+  #diagramCard h3{margin:0 0 4px;font-size:15px;letter-spacing:.5px}
+  #diagramCard p{margin:4px 0 0;font-size:13px;line-height:1.45;font-weight:600;color:#33414a}
+  #closing{position:absolute;left:60px;top:700px;width:420px;text-align:center;background:#ffcf3f;color:#122019;border:3px solid #1a1d20;border-radius:16px;padding:16px 10px;z-index:6}
+  #closing b{font-size:20px;letter-spacing:.5px}
+  #closing p{margin:6px 0 0;font-size:14px;font-weight:700}
+</style></head>
+<body>
+<div id="stage">
+  <div id="camera">
+    <svg id="sceneSvg" viewBox="0 0 540 960" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="grid" width="44" height="44" patternUnits="userSpaceOnUse" patternTransform="rotate(-18)">
+          <path d="M44 0H0V44" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="1.5"/>
+        </pattern>
+      </defs>
+      <!-- cutting mat -->
+      <rect x="0" y="0" width="540" height="960" fill="#2e7d5b"/>
+      <rect x="0" y="0" width="540" height="960" fill="url(#grid)"/>
+      <rect x="0" y="0" width="540" height="14" fill="#1f5c43"/>
+      <!-- props: ruler, pencil, spare paper (static, angled individually) -->
+      <g transform="translate(372,300) rotate(-18)">
+        <rect x="0" y="0" width="172" height="30" rx="4" fill="#f2c94c" stroke="#1a1d20" stroke-width="2"/>
+        <g stroke="#1a1d20" stroke-width="1.5">
+          <line x1="16" y1="0" x2="16" y2="12"/><line x1="36" y1="0" x2="36" y2="12"/><line x1="56" y1="0" x2="56" y2="12"/><line x1="76" y1="0" x2="76" y2="12"/><line x1="96" y1="0" x2="96" y2="12"/><line x1="116" y1="0" x2="116" y2="12"/><line x1="136" y1="0" x2="136" y2="12"/><line x1="156" y1="0" x2="156" y2="12"/>
+        </g>
+      </g>
+      <g transform="translate(52,748) rotate(7)">
+        <rect x="0" y="0" width="208" height="168" fill="#ffffff" opacity="0.92" stroke="#c5ced6" stroke-width="2"/>
+        <g stroke="#d7dee4" stroke-width="2"><line x1="18" y1="34" x2="190" y2="34"/><line x1="18" y1="62" x2="190" y2="62"/><line x1="18" y1="90" x2="190" y2="90"/></g>
+      </g>
+      <g transform="translate(330,800) rotate(-14)">
+        <rect x="0" y="0" width="150" height="12" rx="6" fill="#e8a33d" stroke="#1a1d20" stroke-width="2"/>
+        <polygon points="150,0 168,6 150,12" fill="#f5d7a8" stroke="#1a1d20" stroke-width="2"/>
+      </g>
+
+      <!-- soft shadow under stapler -->
+      <ellipse cx="272" cy="602" rx="212" ry="16" fill="rgba(0,0,0,0.28)"/>
+
+      <!-- paper: two thin sheets on the base, under the mouth -->
+      <g id="paperGroup">
+        <rect x="284" y="562" width="182" height="7" rx="2" fill="#e8ecef" stroke="#9aa5ad" stroke-width="1.5"/>
+        <rect x="280" y="554" width="186" height="7" rx="2" fill="#ffffff" stroke="#1a1d20" stroke-width="1.5"/>
+      </g>
+
+      <!-- BASE / ALAS (layered: shadow, extrusion, main, top strip) -->
+      <g id="baseGroup">
+        <rect x="92" y="582" width="372" height="20" rx="9" fill="rgba(0,0,0,0.30)"/>
+        <rect x="88" y="577" width="372" height="20" rx="9" fill="#1e2429" stroke="#1a1d20" stroke-width="2"/>
+        <rect x="86" y="570" width="372" height="20" rx="9" fill="#3a4248" stroke="#1a1d20" stroke-width="2.5"/>
+        <rect x="86" y="570" width="372" height="6" rx="3" fill="#c5ced6"/>
+        <!-- anvil / landasan at front (right) -->
+        <rect x="388" y="556" width="58" height="15" rx="3" fill="#d7dee4" stroke="#1a1d20" stroke-width="2.5"/>
+        <path d="M398 571 L414 563 L430 571" fill="none" stroke="#5a666e" stroke-width="2.5"/>
+        <line x1="388" y1="563" x2="446" y2="563" stroke="#ffffff" stroke-width="1.5" opacity="0.8"/>
+      </g>
+
+      <!-- HINGE at back (left) -->
+      <g id="hingeGroup">
+        <circle cx="118" cy="532" r="21" fill="#8c969e" stroke="#1a1d20" stroke-width="2.5"/>
+        <circle cx="118" cy="532" r="10" fill="#eef2f5" stroke="#1a1d20" stroke-width="2"/>
+        <circle id="pivotDot" cx="118" cy="532" r="5" fill="#ffcf3f"/>
+      </g>
+
+      <!-- UPPER ARM (rotates around hinge 118,532) -->
+      <g id="armGroup">
+        <!-- shadow -->
+        <path d="M126 530 Q126 514 144 512 L430 512 Q458 512 458 528 L458 544 Q458 556 440 556 L144 556 Q126 556 126 544 Z" fill="rgba(0,0,0,0.30)" transform="translate(14,18)"/>
+        <!-- extrusion -->
+        <path d="M122 525 Q122 509 140 507 L426 507 Q454 507 454 523 L454 539 Q454 551 436 551 L140 551 Q122 551 122 539 Z" fill="#b84d27" stroke="#1a1d20" stroke-width="2.5" transform="translate(4,5)"/>
+        <!-- main orange arm -->
+        <path d="M118 520 Q118 504 136 502 L422 502 Q450 502 450 518 L450 534 Q450 546 432 546 L136 546 Q118 546 118 534 Z" fill="#f2784b" stroke="#1a1d20" stroke-width="2.5"/>
+        <!-- bevel highlight on top edge -->
+        <path d="M140 508 L420 508 Q444 508 444 520 L444 524 L140 524 Z" fill="#ffa07a" opacity="0.85"/>
+        <!-- silver underside strip -->
+        <path d="M126 534 L442 534 L442 546 Q442 546 432 546 L136 546 Q126 546 126 534 Z" fill="#eef2f5" stroke="#1a1d20" stroke-width="2"/>
+        <!-- front nose cap -->
+        <path d="M432 502 Q450 502 450 518 L450 546 L432 546 Z" fill="#d7dee4" stroke="#1a1d20" stroke-width="2"/>
+        <line x1="140" y1="514" x2="420" y2="514" stroke="#ffffff" stroke-width="2" opacity="0.7"/>
+
+        <!-- MAGAZINE (separates downward in exploded view) -->
+        <g id="magGroup">
+          <rect x="131" y="551" width="316" height="14" rx="4" fill="#7a848c" stroke="#1a1d20" stroke-width="2" transform="translate(3,4)"/>
+          <rect x="128" y="547" width="316" height="14" rx="4" fill="#d7dee4" stroke="#1a1d20" stroke-width="2.5"/>
+          <line x1="140" y1="554" x2="432" y2="554" stroke="#5a666e" stroke-width="2"/>
+          <rect x="428" y="547" width="16" height="14" fill="#3a4248" stroke="#1a1d20" stroke-width="2"/>
+        </g>
+
+        <!-- STAPLES ROW (revealed in exploded view) -->
+        <g id="staplesRow" stroke="#8c969e" stroke-width="2.5" fill="none">
+          <path d="M146 560 V548 H162 V560"/><path d="M174 560 V548 H190 V560"/>
+          <path d="M202 560 V548 H218 V560"/><path d="M230 560 V548 H246 V560"/>
+          <path d="M258 560 V548 H274 V560"/><path d="M286 560 V548 H302 V560"/>
+          <path d="M314 560 V548 H330 V560"/><path d="M342 560 V548 H358 V560"/>
+          <path d="M370 560 V548 H386 V560"/><path d="M398 560 V548 H414 V560"/>
+        </g>
+      </g>
+
+      <!-- SINGLE STAPLE at the mouth (follows arm angle, drops + bends in babak 3) -->
+      <g id="stapleSingle">
+        <rect x="0" y="0" width="24" height="5" rx="2" fill="#eef2f5" stroke="#1a1d20" stroke-width="2"/>
+        <g id="legL"><rect x="0" y="5" width="4" height="18" fill="#c5ced6" stroke="#1a1d20" stroke-width="1.5"/></g>
+        <g id="legR"><rect x="20" y="5" width="4" height="18" fill="#c5ced6" stroke="#1a1d20" stroke-width="1.5"/></g>
+      </g>
+
+      <!-- FINAL CLINCHED STAPLE on the paper -->
+      <g id="finalStaple" opacity="0">
+        <rect x="410" y="549" width="24" height="5" rx="2" fill="#eef2f5" stroke="#1a1d20" stroke-width="2"/>
+        <polygon points="410,554 414,554 422,562 418,564" fill="#c5ced6" stroke="#1a1d20" stroke-width="1.5"/>
+        <polygon points="434,554 430,554 422,562 426,564" fill="#c5ced6" stroke="#1a1d20" stroke-width="1.5"/>
+      </g>
+
+      <!-- callout lines -->
+      <g stroke="#ffcf3f" stroke-width="2.5" fill="none">
+        <line id="lineArm" x1="240" y1="502" x2="226" y2="428"/>
+        <line id="lineMag" x1="300" y1="560" x2="300" y2="636"/>
+        <line id="lineBase" x1="200" y1="580" x2="150" y2="636"/>
+        <line id="linePivot" x1="118" y1="512" x2="86" y2="452"/>
+        <line id="lineStaples" x1="300" y1="540" x2="356" y2="392"/>
+        <line id="lineMouth" x1="440" y1="552" x2="412" y2="636"/>
+      </g>
+      <g fill="#ffcf3f" stroke="#1a1d20" stroke-width="1.5">
+        <circle id="dotArm" cx="240" cy="502" r="5"/><circle id="dotMag" cx="300" cy="560" r="5"/>
+        <circle id="dotBase" cx="200" cy="580" r="5"/><circle id="dotPivot" cx="118" cy="512" r="5"/>
+        <circle id="dotStaples" cx="300" cy="540" r="5"/><circle id="dotMouth" cx="440" cy="552" r="5"/>
+      </g>
+    </svg>
+
+    <!-- callout badges (HTML, inside camera so they scale with the scene) -->
+    <div class="badge" id="badgeArm" style="left:170px;top:396px">LENGAN ATAS<small>TUAS PENEKAN</small></div>
+    <div class="badge" id="badgeMag" style="left:232px;top:640px">MAGAZINE<small>TEMPAT ISI STAPLES</small></div>
+    <div class="badge" id="badgeBase" style="left:70px;top:640px">ALAS + LANDASAN<small>PENAHAN &amp; PENEKUK</small></div>
+    <div class="badge" id="badgePivot" style="left:70px;top:424px">TITIK TUMPU<small>ENGSEL BELAKANG</small></div>
+    <div class="badge" id="badgeStaples" style="left:316px;top:360px">DERET STAPLES<small>SIAP MAJU KE MULUT</small></div>
+    <div class="badge" id="badgeMouth" style="left:330px;top:640px">MULUT<small>STAPLE KELUAR DI SINI</small></div>
+
+    <div id="titleBig">
+      <h1>BONGKAR: HEKTER</h1>
+      <p>Alat jilid kertas paling umum, dibongkar cara kerjanya.</p>
+    </div>
+
+    <div id="diagramCard">
+      <h3>TAMPAK SAMPING LANDASAN</h3>
+      <svg width="392" height="72" viewBox="0 0 432 72" xmlns="http://www.w3.org/2000/svg">
+        <rect x="150" y="8" width="130" height="8" rx="2" fill="#ffffff" stroke="#1a1d20" stroke-width="2"/>
+        <rect x="176" y="16" width="78" height="8" rx="2" fill="#ffcf3f" stroke="#1a1d20" stroke-width="2"/>
+        <g id="diagLegL"><rect x="196" y="22" width="6" height="26" fill="#c5ced6" stroke="#1a1d20" stroke-width="2"/></g>
+        <g id="diagLegR"><rect x="230" y="22" width="6" height="26" fill="#c5ced6" stroke="#1a1d20" stroke-width="2"/></g>
+        <rect x="160" y="50" width="112" height="12" rx="3" fill="#d7dee4" stroke="#1a1d20" stroke-width="2"/>
+        <path d="M196 62 L216 54 L236 62" fill="none" stroke="#5a666e" stroke-width="2.5"/>
+      </svg>
+      <p>Kaki staple menembus kertas, menabrak alur landasan, lalu menekuk ke dalam. Kertas pun terkunci.</p>
+    </div>
+
+    <div id="closing">
+      <b>TUAS + LANDASAN = TERKUNCI</b>
+      <p>Satu tekan, satu staple, kertas menyatu.</p>
+    </div>
+  </div>
+
+  <div class="hud" id="hudLeft">
+    <div class="brand">BONGKAR: HEKTER</div>
+    <div class="babak" id="babakLabel">INTRO · HEKTER UTUH</div>
+  </div>
+  <div class="hud" id="hudRight">
+    <div class="val" id="teleVal">0°</div>
+    <div class="lab" id="teleLab">SUDUT TEKAN</div>
+  </div>
+</div>
+<script>
+  var $ = function(id){ return document.getElementById(id); };
+  function ss(a,b,t){ if(t<=a) return 0; if(t>=b) return 1; var x=(t-a)/(b-a); return x*x*(3-2*x); }
+  function sceneOf(t){
+    if(t<4) return 0; if(t<9) return 1; if(t<15) return 2; if(t<20) return 3; return 4;
+  }
+  window.BOUNDS = [0,4,9,15,20,24];
+  function render(t){
+    var sc = sceneOf(t);
+    // SINGLE STATE: press angle drives arm, telemetry, staple position
+    var angle = 0, exploded = 0, down = 0, bend = 0, scale = 1;
+    if(sc===0){ angle = 0; scale = 1.00 + ss(0,4,t)*0.04; }
+    if(sc===1){ angle = ss(4.5,8.5,t)*28; scale = 1.04 + ss(4,9,t)*0.06; }
+    if(sc===2){ angle = 28 + ss(9.5,12,t)*(-42); exploded = ss(9.5,12.5,t); scale = 1.10 - ss(9,15,t)*0.06; }
+    if(sc===3){
+      angle = -14 + ss(15.2,18,t)*42;
+      exploded = 1 - ss(15.2,17,t);
+      down = ss(17,18.5,t)*20;
+      bend = ss(18.5,19.5,t);
+      scale = 1.04 + ss(15,20,t)*0.10;
+    }
+    if(sc===4){ angle = 28 + ss(20.2,21.8,t)*(-28); scale = 1.14 - ss(20,24,t)*0.12; }
+
+    $('armGroup').setAttribute('transform','rotate('+angle+' 118 532)');
+    $('magGroup').setAttribute('transform','translate(0 '+(exploded*20)+')');
+    $('staplesRow').style.opacity = exploded;
+    $('camera').style.transform = 'scale('+scale+')';
+
+    // staple follows the mouth: rotate mouth point (440,542) around hinge (118,532)
+    var rad = angle*Math.PI/180, co = Math.cos(rad), si = Math.sin(rad);
+    var mx = 118 + (440-118)*co - (542-532)*si;
+    var my = 532 + (440-118)*si + (542-532)*co;
+    var stapleOp = 0;
+    if(sc===2) stapleOp = ss(9.5,11,t);
+    if(sc===3) stapleOp = 1;
+    if(sc===4) stapleOp = 1 - ss(20.2,21.2,t);
+    $('stapleSingle').style.opacity = stapleOp;
+    $('stapleSingle').setAttribute('transform','translate('+(mx-12)+' '+(my+4+down)+')');
+    $('legL').setAttribute('transform','rotate('+(-bend*70)+' 2 5)');
+    $('legR').setAttribute('transform','rotate('+(bend*70)+' 22 5)');
+    $('diagLegL').setAttribute('transform','rotate('+(-bend*62)+' 199 22)');
+    $('diagLegR').setAttribute('transform','rotate('+(bend*62)+' 233 22)');
+    $('finalStaple').style.opacity = sc===4 ? ss(21.5,22.5,t) : 0;
+    $('pivotDot').style.opacity = sc===1 ? (0.6+0.4*Math.sin(t*6)) : 0;
+
+    // babak + telemetry, all derived from the same state
+    var labels = ['INTRO · HEKTER UTUH','BABAK 1 · TUAS','BABAK 2 · ISI','BABAK 3 · TEKUK','PENUTUP'];
+    $('babakLabel').textContent = labels[sc];
+    var val = '0°', lab = 'SUDUT TEKAN';
+    if(sc===1){ val = Math.round(angle)+'°'; }
+    if(sc===2){ val = Math.round(exploded*24)+' mm'; lab = 'JARAK LEDAK'; }
+    if(sc===3){
+      if(bend>0.05){ val = Math.round(bend*100)+'%'; lab = 'KAKI TERTEKUK'; }
+      else { val = Math.round(angle)+'°'; }
+    }
+    if(sc===4){ val = '1×'; lab = 'STAPLE TERKUNCI'; }
+    $('teleVal').textContent = val; $('teleLab').textContent = lab;
+
+    // callouts: appear once, stay still, fade at scene change (calm rule)
+    function pair(badge, line, dot, v){
+      $(badge).style.opacity = v; $(line).style.opacity = v; $(dot).style.opacity = v;
+    }
+    var introV = ss(0.8,1.8,t)*(1-ss(3.5,4.5,t));
+    pair('badgeArm','lineArm','dotArm',introV);
+    pair('badgeMag','lineMag','dotMag',introV);
+    pair('badgeBase','lineBase','dotBase',introV);
+    pair('badgePivot','linePivot','dotPivot', ss(4.5,5.5,t)*(1-ss(8.5,9.5,t)));
+    pair('badgeStaples','lineStaples','dotStaples', ss(10,11,t)*(1-ss(14.5,15.5,t)));
+    pair('badgeMouth','lineMouth','dotMouth', ss(10,11,t)*(1-ss(14.5,15.5,t)));
+    $('titleBig').style.opacity = ss(0.3,1,t)*(1-ss(3.2,4,t));
+    $('diagramCard').style.opacity = ss(15.3,15.9,t)*(1-ss(19.3,20,t));
+    $('closing').style.opacity = ss(22,23,t);
+  }
+  render(0);
+</script>
+</body></html>
